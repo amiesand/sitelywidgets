@@ -22,31 +22,33 @@ body {
 
 @font-face {
     font-family: "Tahoma";
-    src: url("fonts/Tahoma.ttf");
+    src: url("../fonts/Tahoma.ttf");
 }
 
 @font-face {
     font-family: "Tahoma Bold";
-    src: url("fonts/Tahoma.ttf");
+    src: url("../fonts/Tahoma.ttf");
 }
 
 @font-face {
     font-family: "Milker";
-    src: url("fonts/Milker.otf");
+    src: url("../fonts/Milker.otf");
 }
 
 @font-face {
     font-family: "Birds of ParadisePERSONAL USE ONLY";
-    src: url("fonts/Birds of ParadisePERSONAL USE ONLY.ttf")
+    src: url("../fonts/Birds of ParadisePERSONAL USE ONLY.ttf")
 }
 
   #lastfm-widget {
     display:flex;
     align-items: center;
     background-color: var(--dirtBrown);
-    width: 100%;
+    width: 500px;
+    max-width: 100%;
     padding: 8px;
     border-radius: 5px;
+    margin: 0 auto;
 }
 
 #albumcover {
@@ -77,6 +79,8 @@ body {
 
 #trackartist {
     margin-top: 15px; 
+   font-family: "Tahoma";
+   color: var(--cream);
 }
   
 @keyframes horzmarquee {
