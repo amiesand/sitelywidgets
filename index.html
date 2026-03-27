@@ -1,0 +1,150 @@
+<html>
+  <head>
+<meta charset="UTF-8">
+  <title>last.fm widget</title>
+
+<style>
+:root {
+    --softPink: #ebadbc;
+    --popPink: #fc7fd9;
+    --darkPink: #d75a78;
+    --textGrey: #677369;
+    --funkyGreen: #a3a447;
+    --softGreen: #bfbe8b;
+    --dirtBrown: #3e1820;
+    --cream: #e6e3dc;
+}
+
+body {
+  margin: 0;
+  background: transparent;
+}
+
+  #lastfm-widget {
+    display:flex;
+    align-items: center;
+    background-color: var(--dirtBrown);
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+}
+
+#albumcover {
+    object-fit: cover;
+    border: inset var(--popPink);
+    height: 100%;
+    width: 100%;  
+}
+
+
+.track-info {
+    margin-right: 10px;
+}
+
+.track-title-wrapper {
+    overflow-x: hidden;
+    width: 280px;
+    white-space: nowrap;
+}
+
+#tracktitle {
+    display: inline-block;
+    padding-left: 100%;
+    animation: horzmarquee 10s linear infinite;
+    font-family: "Milker";
+    color: var(--popPink);
+}
+
+#trackartist {
+    margin-top: 15px; 
+}
+  
+@keyframes horzmarquee {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+  
+</style>
+
+  
+  </head>
+  
+<body>
+
+  <!-- LAST FM MUSIC TRACKER-->
+      <div id="lastfm-widget" class="lastfm-card">
+         <div class="track-info">
+                <div class="track-title-wrapper">
+    
+                    <a id="tracktitle" href="#" target="_blank"></a>
+                </div>
+             <div id="trackartist"></div>
+        </div> 
+       
+          <a id="albumlink" href="#" target="_blank">
+            <img id="albumcover" src="" alt="Album Cover"/>
+        </a>
+         
+      </div>
+  
+  <script>
+(() => {
+  const API_URL = "https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=auo_listens&api_key=77c6f47c3dfeb0c3c758eccb0a4dba3b&format=json&limit=1";
+
+  const titleEl  = document.getElementById("tracktitle");
+  const artistEl = document.getElementById("trackartist");
+  const coverEl  = document.getElementById("albumcover");
+  const albumLinkEl = document.getElementById("albumlink");
+
+  async function update() {
+    try {
+      const res = await fetch(`${API_URL}&_=${Date.now()}`);
+      const data = await res.json();
+      const track = data?.recenttracks?.track?.[0];
+      if (!track) return;
+
+      const artist = track.artist["#text"];
+      const name   = track.name;
+
+      // 🎵 marquee title
+      const text = `Listening to - ${artist} ♪ ${name}`;
+      if (titleEl) {
+        titleEl.textContent = text;
+        titleEl.href = track.url || "#";
+        titleEl.target = "_blank";
+      }
+      
+      // album link 
+      if (albumLinkEl) {
+        albumLinkEl.href = track.url || "#";
+      }
+
+      // artist comes here
+      if (artistEl) {
+        artistEl.textContent = artist;
+      }
+
+      // album cover (always grab largest)
+      const cover = track.image?.[3]?.["#text"];
+      if (coverEl) {
+        coverEl.src = cover || "";
+        coverEl.style.display = cover ? "block" : "none";
+      }
+
+    } catch (err) {
+      console.log("Last.fm error:", err);
+    }
+  }
+
+  update();
+  setInterval(update, 30000);
+})();
+    
+      </script>
+    </body>  
+</html>
