@@ -1,7 +1,7 @@
 <html>
-  <head>
+<head>
 <meta charset="UTF-8">
-  <title>last.fm widget</title>
+<title>Last.fm Widget</title>
 
 <style>
 :root {
@@ -14,74 +14,50 @@
     --dirtBrown: #3e1820;
     --cream: #e6e3dc;
 }
-
+  
+  
 body {
   margin: 0;
   background: transparent;
 }
-
-@font-face {
-    font-family: "Tahoma";
-    src: url("../fonts/Tahoma.ttf");
-}
-
-@font-face {
-    font-family: "Tahoma Bold";
-    src: url("../fonts/Tahoma.ttf");
-}
-
-@font-face {
-    font-family: "Milker";
-    src: url("../fonts/Milker.otf");
-}
-
-@font-face {
-    font-family: "Birds of ParadisePERSONAL USE ONLY";
-    src: url("../fonts/Birds of ParadisePERSONAL USE ONLY.ttf")
-}
   
-  body {
-    cursor:
-        url("https://cdn.cursors-4u.net/css-previews/red-apple-being-eaten-1b24c7af-css.webp") 0 0,
-        auto !important;
-}
+  @font-face {
+    font-family: "Tahoma"; src: url("../fonts/Tahoma.ttf"); 
+  } 
+  
+  @font-face {
+    font-family: "Tahoma Bold"; src: url("../fonts/Tahoma.ttf"); }
+  
+  @font-face {
+    font-family: "Milker"; src: url("../fonts/Milker.otf");
+  }
+  
+  @font-face { 
+    font-family: "Birds of ParadisePERSONAL USE ONLY"; src: url("../fonts/Birds of ParadisePERSONAL USE ONLY.ttf") 
+  }
 
-* {
-    box-sizing: border-box;
-}
-
-
-a { 
-     cursor: url('https://cdn.cursors-4u.net/css-previews/confused-onion-kun-5ff39751-css.webp') 1 1, auto !important;
-}
-
-  #lastfm-widget {
-    display:flex;
+#lastfm-widget {
+    display: flex;
     align-items: center;
     background-color: var(--dirtBrown);
-    box-sizing: border-box;
-    
     width: 100%;
     max-width: 500px;
-    
     padding: 8px;
     border-radius: 5px;
     margin: 0 auto;
+    box-sizing: border-box;
 }
 
 #albumcover {
-    object-fit: cover;
-    border: inset var(--popPink);
+  display: block;
+  background-color: var(--funkyGreen); /* if image fails */
+  object-fit: cover;
+  border: inset var(--popPink);
   height: 120px;
   width: 120px;
-    max-height: 100%;
-    max-width: 100%;
-
-    box-sizing: border-box;
   flex-shrink: 0;
   margin-right: 10px;
 }
-
 
 .track-info {
   display: flex;
@@ -106,45 +82,33 @@ a {
 
 #trackartist {
     margin-top: 15px; 
-   font-family: "Tahoma";
-   color: var(--cream);
+    font-family: "Tahoma";
+    color: var(--cream);
 }
-  
+
 @keyframes horzmarquee {
-    from {
-        transform: translateX(0);
-    }
-    to {
-        transform: translateX(-100%);
-    }
+    from { transform: translateX(0); }
+    to { transform: translateX(-100%); }
 }
-
-  
 </style>
+</head>
 
-  
-  </head>
-  
 <body>
 
-  <!-- LAST FM MUSIC TRACKER-->
-      <div id="lastfm-widget" class="lastfm-card">
-         <div class="track-info">
-                <div class="track-title-wrapper">
-    
-                    <a id="tracktitle" href="#" target="_blank"></a>
-                </div>
-             <div id="trackartist"></div>
-        </div> 
-       
-          <a id="albumlink" href="#" target="_blank">
-            <img id="albumcover" src="" alt="Album Cover"/>
-        </a>
-         
+<div id="lastfm-widget" class="lastfm-card">
+   <div class="track-info">
+      <div class="track-title-wrapper">
+         <a id="tracktitle" href="#" target="_blank"></a>
       </div>
-  
-  <script>
-(() => {
+      <div id="trackartist"></div>
+   </div> 
+   <a id="albumlink" href="#" target="_blank">
+      <img id="albumcover" src="" alt="Album Cover"/>
+   </a>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
   const API_URL = "https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=auo_listens&api_key=77c6f47c3dfeb0c3c758eccb0a4dba3b&format=json&limit=1";
 
   const titleEl  = document.getElementById("tracktitle");
@@ -159,32 +123,46 @@ a {
       const track = data?.recenttracks?.track?.[0];
       if (!track) return;
 
-      const artist = track.artist["#text"];
-      const name   = track.name;
+      const artist = track.artist?.["#text"] || "Unknown Artist";
+      const name   = track.name || "Unknown Track";
 
-      // 🎵 marquee title
-      const text = `Listening to - ${artist} ♪ ${name}`;
+      const directUrl = `https://www.last.fm/music/${encodeURIComponent(artist)}/_/${encodeURIComponent(name)}`;
+
+      // track title
       if (titleEl) {
-        titleEl.textContent = text;
-        titleEl.href = track.url || "#";
+        titleEl.textContent = `Listening to - ${artist} ♪ ${name}`;
+        titleEl.href = directUrl;
         titleEl.target = "_blank";
+        titleEl.rel = "noopener noreferrer";
       }
-      
-      // album link 
+
+      //  cover link
       if (albumLinkEl) {
-        albumLinkEl.href = track.url || "#";
+        albumLinkEl.href = directUrl;
+        albumLinkEl.target = "_blank";
+        albumLinkEl.rel = "noopener noreferrer";
       }
 
-      // artist comes here
-      if (artistEl) {
-        artistEl.textContent = artist;
+      // artist text
+      if (artistEl) artistEl.textContent = artist;
+
+      // album cover: fallback sizes + default placeholder
+      const images = track.image || [];
+      let cover =
+        images[3]?.["#text"] ||
+        images[2]?.["#text"] ||
+        images[1]?.["#text"] ||
+        images[0]?.["#text"] ||
+        "https://via.placeholder.com/120/FC7FD9/3E1820?text=No+Art"; // fallback image
+
+      //  Last.fm transparent placeholder
+      if (cover.includes("2a96cbd8b46e442fc41c2b86b821562f")) {
+        cover = "https://via.placeholder.com/120/FC7FD9/3E1820?text=No+Art";
       }
 
-      // album cover (always grab largest)
-      const cover = track.image?.[3]?.["#text"];
       if (coverEl) {
-        coverEl.src = cover || "";
-        coverEl.style.display = cover ? "block" : "none";
+        coverEl.src = cover;
+        coverEl.style.display = "block"; // always show
       }
 
     } catch (err) {
@@ -194,8 +172,8 @@ a {
 
   update();
   setInterval(update, 30000);
-})();
-    
-      </script>
-    </body>  
+});
+</script>
+
+</body>
 </html>
