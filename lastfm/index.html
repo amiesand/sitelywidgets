@@ -64,8 +64,6 @@ a {
     width: 100%;
     max-width: 500px;
     
-    aspect-ratio: 10 / 3;
-    
     padding: 8px;
     border-radius: 5px;
     margin: 0 auto;
@@ -78,7 +76,7 @@ a {
   width: 120px;
     max-height: 100%;
     max-width: 100%;
-    aspect-ratio: 1 / 1;
+
     box-sizing: border-box;
   flex-shrink: 0;
   margin-right: 10px;
@@ -164,33 +162,18 @@ a {
       const artist = track.artist["#text"];
       const name   = track.name;
 
-   // 🎵 Last.fm URL
-const directUrl = `https://www.last.fm/music/${encodeURIComponent(artist)}/_/${encodeURIComponent(name)}`;
-
-// 🎵 marquee title
-const text = `Listening to - ${artist} ♪ ${name}`;
-if (titleEl) {
-  titleEl.textContent = text;
-
-  // set link to direct Last.fm page (no redirects)
-  titleEl.href = directUrl;
-
-  // open in new tab
-  titleEl.target = "_blank";
-
-  // security 
-  titleEl.rel = "noopener noreferrer";
-}
-
-// 💿 album cover link
-if (albumLinkEl) {
-  // same direct link as title
-  albumLinkEl.href = directUrl;
-
-  // also open in new tab
-  albumLinkEl.target = "_blank";
-  albumLinkEl.rel = "noopener noreferrer";
-}
+      // 🎵 marquee title
+      const text = `Listening to - ${artist} ♪ ${name}`;
+      if (titleEl) {
+        titleEl.textContent = text;
+        titleEl.href = track.url || "#";
+        titleEl.target = "_blank";
+      }
+      
+      // album link 
+      if (albumLinkEl) {
+        albumLinkEl.href = track.url || "#";
+      }
 
       // artist comes here
       if (artistEl) {
